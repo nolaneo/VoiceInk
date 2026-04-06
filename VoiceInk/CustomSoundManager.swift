@@ -53,7 +53,7 @@ class CustomSoundManager: ObservableObject {
         guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
-        return appSupport.appendingPathComponent("VoiceInk/CustomSounds")
+        return appSupport.appendingPathComponent("VoiceInkNeo/CustomSounds")
     }
 
     private func createCustomSoundsDirectoryIfNeeded() {

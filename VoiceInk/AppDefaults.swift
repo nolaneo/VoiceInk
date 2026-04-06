@@ -5,8 +5,6 @@ enum AppDefaults {
         UserDefaults.standard.register(defaults: [
             // Onboarding & General
             "hasCompletedOnboarding": false,
-            "enableAnnouncements": true,
-            "autoUpdateCheck": true,
 
             // Clipboard
             "restoreClipboardAfterPaste": true,

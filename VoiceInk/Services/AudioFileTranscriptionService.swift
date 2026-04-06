@@ -65,7 +65,7 @@ class AudioTranscriptionService: ObservableObject {
             let audioAsset = AVURLAsset(url: url)
             let duration = CMTimeGetSeconds(try await audioAsset.load(.duration))
             let recordingsDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("com.prakashjoshipax.VoiceInk")
+                .appendingPathComponent("com.prakashjoshipax.VoiceInkNeo")
                 .appendingPathComponent("Recordings")
             
             let fileName = "retranscribed_\(UUID().uuidString).wav"

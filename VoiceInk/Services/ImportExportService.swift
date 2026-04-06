@@ -142,8 +142,8 @@ class ImportExportService {
 
             let savePanel = NSSavePanel()
             savePanel.allowedContentTypes = [UTType.json]
-            savePanel.nameFieldStringValue = "VoiceInk_Settings_Backup.json"
-            savePanel.title = "Export VoiceInk Settings"
+            savePanel.nameFieldStringValue = "VoiceInkNeo_Settings_Backup.json"
+            savePanel.title = "Export VoiceInkNeo Settings"
             savePanel.message = "Choose a location to save your settings."
 
             DispatchQueue.main.async {
@@ -172,7 +172,7 @@ class ImportExportService {
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
-        openPanel.title = "Import VoiceInk Settings"
+        openPanel.title = "Import VoiceInkNeo Settings"
         openPanel.message = "Choose a settings file to import. This will overwrite ALL settings (prompts, power modes, dictionary, general app settings)."
 
         DispatchQueue.main.async {
@@ -370,7 +370,7 @@ class ImportExportService {
         DispatchQueue.main.async {
             let alert = NSAlert()
             alert.messageText = "Import Successful"
-            alert.informativeText = message + "\n\nIMPORTANT: If you were using AI enhancement features, please make sure to reconfigure your API keys in the Enhancement section.\n\nIt is recommended to restart VoiceInk for all changes to take full effect."
+            alert.informativeText = message + "\n\nIMPORTANT: If you were using AI enhancement features, please make sure to reconfigure your API keys in the Enhancement section.\n\nIt is recommended to restart VoiceInkNeo for all changes to take full effect."
             alert.alertStyle = .informational
             alert.addButton(withTitle: "OK")
             alert.addButton(withTitle: "Configure API Keys")

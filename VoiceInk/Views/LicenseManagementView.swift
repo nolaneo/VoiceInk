@@ -38,7 +38,7 @@ struct LicenseManagementView: View {
                         .foregroundStyle(.blue)
                     
                     HStack(alignment: .lastTextBaseline, spacing: 8) { 
-                        Text(licenseViewModel.licenseState == .licensed ? "VoiceInk Pro" : "Upgrade to Pro")
+                        Text(licenseViewModel.licenseState == .licensed ? "VoiceInkNeo Pro" : "Upgrade to Pro")
                             .font(.system(size: 32, weight: .bold))
                         
                         Text("v\(appVersion)")
@@ -49,7 +49,7 @@ struct LicenseManagementView: View {
                 }
                 
                 Text(licenseViewModel.licenseState == .licensed ?
-                     "Thank you for supporting VoiceInk" :
+                     "Thank you for supporting VoiceInkNeo" :
                      "Transcribe what you say to text instantly with AI")
                     .font(.title3)
                     .foregroundStyle(.secondary)
@@ -58,7 +58,7 @@ struct LicenseManagementView: View {
                 if case .licensed = licenseViewModel.licenseState {
                     HStack(spacing: 40) {
                         Button {
-                            if let url = URL(string: "https://github.com/Beingpax/VoiceInk/releases") {
+                            if let url = URL(string: "https://github.com/Beingpax/VoiceInkNeo/releases") {
                                 NSWorkspace.shared.open(url)
                             }
                         } label: {
@@ -130,7 +130,7 @@ struct LicenseManagementView: View {
                         NSWorkspace.shared.open(url)
                     }
                 }) {
-                    Text("Upgrade to VoiceInk Pro")
+                    Text("Upgrade to VoiceInkNeo Pro")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
@@ -240,7 +240,7 @@ struct LicenseManagementView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text("You can use VoiceInk Pro on all your personal devices")
+                    Text("You can use VoiceInkNeo Pro on all your personal devices")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

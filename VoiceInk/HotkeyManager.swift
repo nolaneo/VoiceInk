@@ -81,6 +81,14 @@ class HotkeyManager: ObservableObject {
     private var pendingFnKeyState: Bool? = nil
     private var pendingFnEventTime: TimeInterval? = nil
 
+    // Fn chord detection: when Fn is the configured dictation hotkey and the
+    // user chords it with another key (e.g. Fn+Backspace for forward-delete),
+    // they are using Fn as a modifier, not starting dictation. Silently
+    // cancel the in-flight (or not-yet-started) recording.
+    private var fnChordMonitorGlobal: Any?
+    private var fnChordMonitorLocal: Any?
+    private var isFnDictationActive = false
+
     // Keyboard shortcut state tracking
     private var shortcutKeyPressEventTime: TimeInterval?
     private var isShortcutHandsFreeMode = false
@@ -294,12 +302,12 @@ class HotkeyManager: ObservableObject {
             NSEvent.removeMonitor(monitor)
             globalEventMonitor = nil
         }
-        
+
         if let monitor = localEventMonitor {
             NSEvent.removeMonitor(monitor)
             localEventMonitor = nil
         }
-        
+
         for monitor in middleClickMonitors {
             if let monitor = monitor {
                 NSEvent.removeMonitor(monitor)
@@ -307,8 +315,66 @@ class HotkeyManager: ObservableObject {
         }
         middleClickMonitors = []
         middleClickTask?.cancel()
-        
+
+        disarmFnChordDetection()
+
         resetKeyStates()
+    }
+
+    // MARK: - Fn chord detection
+
+    private func armFnChordDetection() {
+        disarmFnChordDetection()
+        isFnDictationActive = true
+        fnChordMonitorGlobal = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] _ in
+            Task { @MainActor in await self?.handleFnChord() }
+        }
+        fnChordMonitorLocal = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            Task { @MainActor in await self?.handleFnChord() }
+            return event
+        }
+    }
+
+    private func disarmFnChordDetection() {
+        isFnDictationActive = false
+        if let m = fnChordMonitorGlobal {
+            NSEvent.removeMonitor(m)
+            fnChordMonitorGlobal = nil
+        }
+        if let m = fnChordMonitorLocal {
+            NSEvent.removeMonitor(m)
+            fnChordMonitorLocal = nil
+        }
+    }
+
+    private func handleFnChord() async {
+        guard isFnDictationActive else { return }
+        logger.notice("Fn chord detected — silently cancelling dictation")
+
+        // Cancel any pending Fn debounce so a deferred key-down doesn't fire
+        // after we've aborted.
+        fnDebounceTask?.cancel()
+        fnDebounceTask = nil
+        pendingFnKeyState = nil
+        pendingFnEventTime = nil
+
+        disarmFnChordDetection()
+
+        // Reset the modifier-key state machine so the eventual Fn-up
+        // flagsChanged event doesn't run the normal release logic.
+        currentKeyState = false
+        keyPressEventTime = nil
+        isHandsFreeMode = false
+
+        // If recording actually started before the chord was detected, tear
+        // it down silently: suppress the start sound, discard the audio, and
+        // dismiss the recorder panel without the ESC sound that the normal
+        // cancelRecording() path plays.
+        if recorderUIManager.isMiniRecorderVisible || engine.recordingState == .recording {
+            SoundManager.shared.stopStartSound()
+            engine.shouldCancelRecording = true
+            await recorderUIManager.dismissMiniRecorder()
+        }
     }
     
     private func resetKeyStates() {
@@ -349,6 +415,14 @@ class HotkeyManager: ObservableObject {
             isKeyPressed = flags.contains(.control)
         case .fn:
             isKeyPressed = flags.contains(.function)
+            // Arm (on down) or disarm (on up) chord detection BEFORE the
+            // 75ms debounce, so a fast chord (Fn+X within 75ms) is caught
+            // even though processKeyPress hasn't run yet.
+            if isKeyPressed {
+                armFnChordDetection()
+            } else {
+                disarmFnChordDetection()
+            }
             pendingFnKeyState = isKeyPressed
             pendingFnEventTime = eventTime
             fnDebounceTask?.cancel()

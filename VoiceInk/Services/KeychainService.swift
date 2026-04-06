@@ -9,7 +9,7 @@ final class KeychainService {
     static let shared = KeychainService()
 
     private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "KeychainService")
-    private let service = "com.prakashjoshipax.VoiceInk"
+    private let service = "com.prakashjoshipax.VoiceInkNeo"
 
     #if LOCAL_BUILD
     private let defaults = UserDefaults.standard
@@ -22,7 +22,7 @@ final class KeychainService {
 
     /// Saves a string value to Keychain.
     @discardableResult
-    func save(_ value: String, forKey key: String, syncable: Bool = true) -> Bool {
+    func save(_ value: String, forKey key: String, syncable: Bool = false) -> Bool {
         guard let data = value.data(using: .utf8) else {
             logger.error("Failed to convert value to data for key: \(key, privacy: .public)")
             return false
@@ -32,7 +32,7 @@ final class KeychainService {
 
     /// Saves data to Keychain.
     @discardableResult
-    func save(data: Data, forKey key: String, syncable: Bool = true) -> Bool {
+    func save(data: Data, forKey key: String, syncable: Bool = false) -> Bool {
         #if LOCAL_BUILD
         defaults.set(data, forKey: localPrefix + key)
         return true
@@ -56,7 +56,7 @@ final class KeychainService {
     }
 
     /// Retrieves a string value from Keychain.
-    func getString(forKey key: String, syncable: Bool = true) -> String? {
+    func getString(forKey key: String, syncable: Bool = false) -> String? {
         guard let data = getData(forKey: key, syncable: syncable) else {
             return nil
         }
@@ -64,7 +64,7 @@ final class KeychainService {
     }
 
     /// Retrieves data from Keychain.
-    func getData(forKey key: String, syncable: Bool = true) -> Data? {
+    func getData(forKey key: String, syncable: Bool = false) -> Data? {
         #if LOCAL_BUILD
         return defaults.data(forKey: localPrefix + key)
         #else
@@ -87,7 +87,7 @@ final class KeychainService {
 
     /// Deletes an item from Keychain.
     @discardableResult
-    func delete(forKey key: String, syncable: Bool = true) -> Bool {
+    func delete(forKey key: String, syncable: Bool = false) -> Bool {
         #if LOCAL_BUILD
         defaults.removeObject(forKey: localPrefix + key)
         return true
@@ -108,7 +108,7 @@ final class KeychainService {
     }
 
     /// Checks if a key exists in Keychain.
-    func exists(forKey key: String, syncable: Bool = true) -> Bool {
+    func exists(forKey key: String, syncable: Bool = false) -> Bool {
         #if LOCAL_BUILD
         return defaults.data(forKey: localPrefix + key) != nil
         #else
