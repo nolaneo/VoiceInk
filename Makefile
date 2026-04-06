@@ -46,7 +46,7 @@ build: setup
 
 # Build for local use without Apple Developer certificate
 local: check setup
-	@echo "Building VoiceInk for local use (no Apple Developer certificate required)..."
+	@echo "Building VoiceInkNeo for local use (no Apple Developer certificate required)..."
 	@rm -rf "$(LOCAL_DERIVED_DATA)"
 	xcodebuild -project VoiceInk.xcodeproj -scheme VoiceInk -configuration Debug \
 		-derivedDataPath "$(LOCAL_DERIVED_DATA)" \
@@ -58,21 +58,21 @@ local: check setup
 		CODE_SIGN_ENTITLEMENTS=$(CURDIR)/VoiceInk/VoiceInk.local.entitlements \
 		SWIFT_ACTIVE_COMPILATION_CONDITIONS='$$(inherited) LOCAL_BUILD' \
 		build
-	@APP_PATH="$(LOCAL_DERIVED_DATA)/Build/Products/Debug/VoiceInk.app" && \
+	@APP_PATH="$(LOCAL_DERIVED_DATA)/Build/Products/Debug/VoiceInkNeo.app" && \
 	if [ -d "$$APP_PATH" ]; then \
-		echo "Copying VoiceInk.app to ~/Downloads..."; \
-		rm -rf "$$HOME/Downloads/VoiceInk.app"; \
-		ditto "$$APP_PATH" "$$HOME/Downloads/VoiceInk.app"; \
-		xattr -cr "$$HOME/Downloads/VoiceInk.app"; \
+		echo "Copying VoiceInkNeo.app to ~/Downloads..."; \
+		rm -rf "$$HOME/Downloads/VoiceInkNeo.app"; \
+		ditto "$$APP_PATH" "$$HOME/Downloads/VoiceInkNeo.app"; \
+		xattr -cr "$$HOME/Downloads/VoiceInkNeo.app"; \
 		echo ""; \
-		echo "Build complete! App saved to: ~/Downloads/VoiceInk.app"; \
-		echo "Run with: open ~/Downloads/VoiceInk.app"; \
+		echo "Build complete! App saved to: ~/Downloads/VoiceInkNeo.app"; \
+		echo "Run with: open ~/Downloads/VoiceInkNeo.app"; \
 		echo ""; \
 		echo "Limitations of local builds:"; \
 		echo "  - No iCloud dictionary sync"; \
 		echo "  - No automatic updates (pull new code and rebuild to update)"; \
 	else \
-		echo "Error: Could not find built VoiceInk.app at $$APP_PATH"; \
+		echo "Error: Could not find built VoiceInkNeo.app at $$APP_PATH"; \
 		exit 1; \
 	fi
 

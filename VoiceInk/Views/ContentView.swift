@@ -15,7 +15,7 @@ enum ViewType: String, CaseIterable, Identifiable {
     case audioInput = "Audio Input"
     case dictionary = "Dictionary"
     case settings = "Settings"
-    case license = "VoiceInk Pro"
+    case license = "VoiceInkNeo Pro"
 
     var id: String { rawValue }
 
@@ -90,7 +90,7 @@ struct ContentView: View {
                                 .cornerRadius(8)
                         }
 
-                        Text("VoiceInk")
+                        Text("VoiceInkNeo")
                             .font(.system(size: 14, weight: .semibold))
 
                         if case .licensed = licenseViewModel.licenseState {
@@ -133,7 +133,7 @@ struct ContentView: View {
                 }
             }
             .listStyle(.sidebar)
-            .navigationTitle("VoiceInk")
+            .navigationTitle("VoiceInkNeo")
             .navigationSplitViewColumnWidth(210)
         } detail: {
             if let selectedView = selectedView {
@@ -162,7 +162,7 @@ struct ContentView: View {
                     selectedView = .settings
                 case "AI Models":
                     selectedView = .models
-                case "VoiceInk Pro":
+                case "VoiceInkNeo Pro":
                     selectedView = .license
                 case "History":
                     HistoryWindowController.shared.showHistoryWindow(

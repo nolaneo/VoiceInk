@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 import os
 
-private let logger = Logger(subsystem: "com.VoiceInk", category: "CursorPaster")
+private let logger = Logger(subsystem: "com.VoiceInkNeo", category: "CursorPaster")
 
 class CursorPaster {
 

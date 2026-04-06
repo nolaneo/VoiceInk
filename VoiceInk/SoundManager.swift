@@ -94,6 +94,16 @@ class SoundManager: ObservableObject {
         }
     }
 
+    /// Stops the start sound immediately (used by the Fn-chord silent cancel
+    /// path, which needs to suppress audible feedback when a Fn+X chord aborts
+    /// a dictation that had just started).
+    func stopStartSound() {
+        customStartSound?.stop()
+        customStartSound?.currentTime = 0
+        startSound?.stop()
+        startSound?.currentTime = 0
+    }
+
     func playStopSound() {
         guard isSoundFeedbackEnabled else { return }
 

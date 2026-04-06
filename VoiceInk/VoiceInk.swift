@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import Sparkle
 import AppKit
 import OSLog
 import AppIntents
@@ -18,13 +17,11 @@ struct VoiceInkApp: App {
     @StateObject private var transcriptionModelManager: TranscriptionModelManager
     @StateObject private var recorderUIManager: RecorderUIManager
     @StateObject private var hotkeyManager: HotkeyManager
-    @StateObject private var updaterViewModel: UpdaterViewModel
     @StateObject private var menuBarManager: MenuBarManager
     @StateObject private var aiService = AIService()
     @StateObject private var enhancementService: AIEnhancementService
     @StateObject private var activeWindowService = ActiveWindowService.shared
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @AppStorage("enableAnnouncements") private var enableAnnouncements = true
     @State private var showMenuBarIcon = true
 
     // Audio cleanup manager for automatic deletion of old audio files
@@ -69,7 +66,7 @@ struct VoiceInkApp: App {
             DispatchQueue.main.async {
                 let alert = NSAlert()
                 alert.messageText = "Storage Warning"
-                alert.informativeText = "VoiceInk couldn't access its storage location. Your transcriptions will not be saved between sessions."
+                alert.informativeText = "VoiceInkNeo couldn't access its storage location. Your transcriptions will not be saved between sessions."
                 alert.alertStyle = .warning
                 alert.addButton(withTitle: "OK")
                 alert.runModal()
@@ -93,15 +90,12 @@ struct VoiceInkApp: App {
         let aiService = AIService()
         _aiService = StateObject(wrappedValue: aiService)
 
-        let updaterViewModel = UpdaterViewModel()
-        _updaterViewModel = StateObject(wrappedValue: updaterViewModel)
-
         let enhancementService = AIEnhancementService(aiService: aiService, modelContext: container.mainContext)
         _enhancementService = StateObject(wrappedValue: enhancementService)
 
         // 1. Create modelsDirectory URL
         let appSupportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("com.prakashjoshipax.VoiceInk")
+            .appendingPathComponent("com.prakashjoshipax.VoiceInkNeo")
         let modelsDirectory = appSupportDirectory.appendingPathComponent("WhisperModels")
 
         // 2. Create model managers
@@ -178,7 +172,7 @@ struct VoiceInkApp: App {
         do {
             // Create app-specific Application Support directory URL
             let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("com.prakashjoshipax.VoiceInk", isDirectory: true)
+                .appendingPathComponent("com.prakashjoshipax.VoiceInkNeo", isDirectory: true)
 
             // Create the directory if it doesn't exist
             try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
@@ -201,7 +195,7 @@ struct VoiceInkApp: App {
             #if LOCAL_BUILD
             let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .none
             #else
-            let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .private("iCloud.com.prakashjoshipax.VoiceInk")
+            let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .private("iCloud.com.prakashjoshipax.VoiceInkNeo")
             #endif
             let dictionaryConfig = ModelConfiguration(
                 "dictionary",
@@ -256,7 +250,6 @@ struct VoiceInkApp: App {
                     .environmentObject(transcriptionModelManager)
                     .environmentObject(recorderUIManager)
                     .environmentObject(hotkeyManager)
-                    .environmentObject(updaterViewModel)
                     .environmentObject(menuBarManager)
                     .environmentObject(aiService)
                     .environmentObject(enhancementService)
@@ -266,7 +259,7 @@ struct VoiceInkApp: App {
                         if containerInitializationFailed {
                             let alert = NSAlert()
                             alert.messageText = "Critical Storage Error"
-                            alert.informativeText = "VoiceInk cannot initialize its storage system. The app cannot continue.\n\nPlease try reinstalling the app or contact support if the issue persists."
+                            alert.informativeText = "VoiceInkNeo cannot initialize its storage system. The app cannot continue.\n\nPlease try reinstalling the app or contact support if the issue persists."
                             alert.alertStyle = .critical
                             alert.addButton(withTitle: "Quit")
                             alert.runModal()
@@ -277,11 +270,6 @@ struct VoiceInkApp: App {
 
                         // Migrate dictionary data from UserDefaults to SwiftData (one-time operation)
                         DictionaryMigrationService.shared.migrateIfNeeded(context: container.mainContext)
-
-                        updaterViewModel.silentlyCheckForUpdates()
-                        if enableAnnouncements {
-                            AnnouncementsService.shared.start()
-                        }
 
                         // Start the automatic audio cleanup process only if transcript cleanup is not enabled
                         if !UserDefaults.standard.bool(forKey: "IsTranscriptionCleanupEnabled") {
@@ -301,7 +289,6 @@ struct VoiceInkApp: App {
                         WindowManager.shared.configureWindow(window)
                     })
                     .onDisappear {
-                        AnnouncementsService.shared.stop()
                         whisperModelManager.unloadModel()
 
                         // Stop the automatic audio cleanup process
@@ -330,10 +317,6 @@ struct VoiceInkApp: App {
         .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) { }
-
-            CommandGroup(after: .appInfo) {
-                CheckForUpdatesView(updaterViewModel: updaterViewModel)
-            }
         }
 
         MenuBarExtra(isInserted: $showMenuBarIcon) {
@@ -345,7 +328,6 @@ struct VoiceInkApp: App {
                 .environmentObject(recorderUIManager)
                 .environmentObject(hotkeyManager)
                 .environmentObject(menuBarManager)
-                .environmentObject(updaterViewModel)
                 .environmentObject(aiService)
                 .environmentObject(enhancementService)
         } label: {
@@ -367,48 +349,6 @@ struct VoiceInkApp: App {
             }
         }
         #endif
-    }
-}
-
-class UpdaterViewModel: ObservableObject {
-    @AppStorage("autoUpdateCheck") private var autoUpdateCheck = true
-
-    private let updaterController: SPUStandardUpdaterController
-
-    @Published var canCheckForUpdates = false
-
-    init() {
-        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-
-        // Enable automatic update checking
-        updaterController.updater.automaticallyChecksForUpdates = autoUpdateCheck
-        updaterController.updater.updateCheckInterval = 24 * 60 * 60
-
-        updaterController.updater.publisher(for: \.canCheckForUpdates)
-            .assign(to: &$canCheckForUpdates)
-    }
-
-    func toggleAutoUpdates(_ value: Bool) {
-        updaterController.updater.automaticallyChecksForUpdates = value
-    }
-
-    func checkForUpdates() {
-        // This is for manual checks - will show UI
-        updaterController.checkForUpdates(nil)
-    }
-
-    func silentlyCheckForUpdates() {
-        // This checks for updates in the background without showing UI unless an update is found
-        updaterController.updater.checkForUpdatesInBackground()
-    }
-}
-
-struct CheckForUpdatesView: View {
-    @ObservedObject var updaterViewModel: UpdaterViewModel
-
-    var body: some View {
-        Button("Check for Updates…", action: updaterViewModel.checkForUpdates)
-            .disabled(!updaterViewModel.canCheckForUpdates)
     }
 }
 

@@ -49,7 +49,7 @@ class DictionaryImportExportService {
 
             let savePanel = NSSavePanel()
             savePanel.allowedContentTypes = [UTType.json]
-            savePanel.nameFieldStringValue = "VoiceInk_Dictionary.json"
+            savePanel.nameFieldStringValue = "VoiceInkNeo_Dictionary.json"
             savePanel.title = "Export Dictionary Data"
             savePanel.message = "Choose a location to save your vocabulary and word replacements."
 
