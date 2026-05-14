@@ -3,7 +3,7 @@ import SwiftData
 import os
 
 struct MetricsContent: View {
-    private let logger = Logger(subsystem: "com.prakashjoshipax.VoiceInkNeo", category: "MetricsContent")
+    private let logger = Logger(subsystem: "com.nolaneo.VoiceInkNeo", category: "MetricsContent")
     let modelContext: ModelContext
     let licenseState: LicenseViewModel.LicenseState
 

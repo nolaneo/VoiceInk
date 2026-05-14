@@ -44,7 +44,7 @@ struct VoiceInkApp: App {
             UserDefaults.standard.set(hasEnabledPowerModes, forKey: "powerModeUIFlag")
         }
 
-        let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "Initialization")
+        let logger = Logger(subsystem: "com.nolaneo.voiceink", category: "Initialization")
         let schema = Schema([
             Transcription.self,
             VocabularyWord.self,
@@ -95,7 +95,7 @@ struct VoiceInkApp: App {
 
         // 1. Create modelsDirectory URL
         let appSupportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("com.prakashjoshipax.VoiceInkNeo")
+            .appendingPathComponent("com.nolaneo.VoiceInkNeo")
         let modelsDirectory = appSupportDirectory.appendingPathComponent("WhisperModels")
 
         // 2. Create model managers
@@ -172,7 +172,7 @@ struct VoiceInkApp: App {
         do {
             // Create app-specific Application Support directory URL
             let appSupportURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("com.prakashjoshipax.VoiceInkNeo", isDirectory: true)
+                .appendingPathComponent("com.nolaneo.VoiceInkNeo", isDirectory: true)
 
             // Create the directory if it doesn't exist
             try? FileManager.default.createDirectory(at: appSupportURL, withIntermediateDirectories: true)
@@ -195,7 +195,7 @@ struct VoiceInkApp: App {
             #if LOCAL_BUILD
             let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .none
             #else
-            let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .private("iCloud.com.prakashjoshipax.VoiceInkNeo")
+            let dictionaryCloudKit: ModelConfiguration.CloudKitDatabase = .private("iCloud.com.nolaneo.VoiceInkNeo")
             #endif
             let dictionaryConfig = ModelConfiguration(
                 "dictionary",
@@ -306,7 +306,7 @@ struct VoiceInkApp: App {
                     .environmentObject(enhancementService)
                     .frame(minWidth: 880, minHeight: 780)
                     .background(WindowAccessor { window in
-                        if window.identifier == nil || window.identifier != NSUserInterfaceItemIdentifier("com.prakashjoshipax.voiceink.onboardingWindow") {
+                        if window.identifier == nil || window.identifier != NSUserInterfaceItemIdentifier("com.nolaneo.voiceink.onboardingWindow") {
                             WindowManager.shared.configureOnboardingPanel(window)
                         }
                     })

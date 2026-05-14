@@ -56,8 +56,8 @@ Two automatic network calls still remain even in local builds:
 Either disable at runtime:
 
 ```bash
-defaults write com.prakashjoshipax.voiceink autoUpdateCheck -bool false
-defaults write com.prakashjoshipax.voiceink enableAnnouncements -bool false
+defaults write com.nolaneo.voiceink autoUpdateCheck -bool false
+defaults write com.nolaneo.voiceink enableAnnouncements -bool false
 ```
 
 …or (recommended for a truly independent build) gate both behind `#if !LOCAL_BUILD` in source so they can never fire.
@@ -207,8 +207,8 @@ High-level groupings (not enumerating every file):
 - Network client + server
 - Screen capture
 - User-selected read-only files
-- iCloud / CloudKit (container `iCloud.com.prakashjoshipax.VoiceInk`)
-- Keychain access group `$(AppIdentifierPrefix)com.prakashjoshipax.VoiceInk`
+- iCloud / CloudKit (container `iCloud.com.nolaneo.VoiceInk`)
+- Keychain access group `$(AppIdentifierPrefix)com.nolaneo.VoiceInk`
 - Mach exception handler for Sparkle
 
 **`VoiceInk.local.entitlements`** (`LOCAL_BUILD`): same runtime capabilities **minus** iCloud, APS, and keychain groups.

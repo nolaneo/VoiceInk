@@ -26,13 +26,6 @@ struct HelpAndResourcesSection: View {
                     url: "https://tryvoiceink.com/docs"
                 )
                 
-                resourceLink(
-                    icon: "exclamationmark.bubble.fill",
-                    title: "Feedback or Issues?",
-                    action: {
-                        EmailSupport.openSupportEmail()
-                    }
-                )
             }
         }
         .padding(18)

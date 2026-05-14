@@ -5,7 +5,7 @@ import os
 /// Agreement-based on-device streaming transcription using Parakeet ASR.
 final class ParakeetStreamingProvider: StreamingTranscriptionProvider {
 
-    private let logger = Logger(subsystem: "com.prakashjoshipax.voiceink", category: "ParakeetStreaming")
+    private let logger = Logger(subsystem: "com.nolaneo.voiceink", category: "ParakeetStreaming")
     private let parakeetService: ParakeetTranscriptionService
     private var eventsContinuation: AsyncStream<StreamingTranscriptionEvent>.Continuation?
 

@@ -46,19 +46,21 @@ struct NotchRecorderView<S: RecorderStateProvider & ObservableObject>: View {
 
     // MARK: - Layout Constants
 
-    private let recordingSideExpansion: CGFloat = 90
+    private let activePillWidth: CGFloat = 85
+    private let activePillHeight: CGFloat = 25
     private let transcriptSideExpansion: CGFloat = 110
-    private let activeHeightBonus: CGFloat = 6
     private let transcriptPanelHeight: CGFloat = 57
 
-    private var mainRowHeight: CGFloat { notchHeight + activeHeightBonus }
+    private var mainRowHeight: CGFloat {
+        displayState == .liveText ? notchHeight + 6 : activePillHeight
+    }
 
     // MARK: - Pill Dimensions
 
     private var pillWidth: CGFloat {
         switch displayState {
         case .collapsed: return notchWidth
-        case .active:    return notchWidth + recordingSideExpansion * 2
+        case .active:    return activePillWidth
         case .liveText:  return notchWidth + transcriptSideExpansion * 2
         }
     }
@@ -66,13 +68,9 @@ struct NotchRecorderView<S: RecorderStateProvider & ObservableObject>: View {
     private var pillHeight: CGFloat {
         switch displayState {
         case .collapsed: return 0
-        case .active:    return mainRowHeight
+        case .active:    return activePillHeight
         case .liveText:  return mainRowHeight + transcriptPanelHeight
         }
-    }
-
-    private var sideExpansion: CGFloat {
-        displayState == .liveText ? transcriptSideExpansion : recordingSideExpansion
     }
 
     // MARK: - Animation
@@ -118,31 +116,24 @@ struct NotchRecorderView<S: RecorderStateProvider & ObservableObject>: View {
         ZStack {
             Color.clear
 
-            HStack(spacing: 10) {
-                RecorderPromptButton(activePopover: $activePopover, buttonSize: 20, padding: EdgeInsets())
-                RecorderPowerModeButton(activePopover: $activePopover, buttonSize: 20, padding: EdgeInsets())
-                Spacer(minLength: 0)
+            if displayState == .liveText {
+                // Show buttons only in live text mode where there's more room
+                HStack(spacing: 10) {
+                    RecorderPromptButton(activePopover: $activePopover, buttonSize: 20, padding: EdgeInsets())
+                    RecorderPowerModeButton(activePopover: $activePopover, buttonSize: 20, padding: EdgeInsets())
+                    Spacer(minLength: 0)
+                }
+                .padding(.leading, 18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .animation(expandAnimation.delay(0.09), value: displayState)
             }
-            .padding(.leading, displayState == .liveText ? 18 : 14)
-            .frame(width: sideExpansion)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .opacity(displayState != .collapsed ? 1 : 0)
-            .animation(
-                displayState != .collapsed ? expandAnimation.delay(0.09) : collapseAnimation,
-                value: displayState
-            )
 
-            HStack(spacing: 0) {
-                Spacer(minLength: 0)
-                RecorderStatusDisplay(
-                    currentState: stateProvider.recordingState,
-                    audioMeter: recorder.audioMeter,
-                    menuBarHeight: notchHeight
-                )
-            }
-            .padding(.trailing, displayState == .liveText ? 18 : 14)
-            .frame(width: sideExpansion)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            // Centered waveform / status display
+            RecorderStatusDisplay(
+                currentState: stateProvider.recordingState,
+                audioMeter: recorder.audioMeter,
+                menuBarHeight: notchHeight
+            )
             .opacity(displayState != .collapsed ? 1 : 0)
             .animation(
                 displayState != .collapsed ? expandAnimation.delay(0.09) : collapseAnimation,

@@ -227,12 +227,6 @@ struct MenuBarView: View {
             
             Divider()
 
-            Button("Help and Support") {
-                EmailSupport.openSupportEmail()
-            }
-            
-            Divider()
-
             Button("Quit VoiceInkNeo") {
                 NSApplication.shared.terminate(nil)
             }

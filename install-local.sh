@@ -51,7 +51,7 @@ rm -rf "$HOME/Downloads/${APP_NAME}.app"
 # Ad-hoc signatures churn on every rebuild, so TCC grants get invalidated even
 # though System Settings still shows the toggle ON. Wipe the stale rows so the
 # user can cleanly re-add the new build in Privacy & Security.
-BUNDLE_ID="com.prakashjoshipax.VoiceInkNeo"
+BUNDLE_ID="com.nolaneo.VoiceInkNeo"
 echo
 echo "==> Resetting stale TCC grants for $BUNDLE_ID"
 tccutil reset Accessibility  "$BUNDLE_ID" 2>/dev/null || true

@@ -58,7 +58,7 @@ struct LicenseManagementView: View {
                 if case .licensed = licenseViewModel.licenseState {
                     HStack(spacing: 40) {
                         Button {
-                            if let url = URL(string: "https://github.com/Beingpax/VoiceInkNeo/releases") {
+                            if let url = URL(string: "https://github.com/nolaneo/VoiceInk/releases") {
                                 NSWorkspace.shared.open(url)
                             }
                         } label: {
@@ -75,30 +75,6 @@ struct LicenseManagementView: View {
                         }
                         .buttonStyle(.plain)
                         
-                        Button {
-                            EmailSupport.openSupportEmail()
-                        } label: {
-                            featureItem(icon: "envelope.fill", title: "Email Support", color: .orange)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Button {
-                            if let url = URL(string: "https://tryvoiceink.com/docs") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        } label: {
-                            featureItem(icon: "book.fill", title: "Docs", color: .indigo)
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Button {
-                            if let url = URL(string: "https://buymeacoffee.com/beingpax") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        } label: {
-                            animatedTipJarItem()
-                        }
-                        .buttonStyle(.plain)
                     }
                     .padding(.top, 8)
                 }
@@ -197,15 +173,6 @@ struct LicenseManagementView: View {
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Button(action: {
-                        if let url = URL(string: "https://polar.sh/beingpax/portal/request") {
-                            NSWorkspace.shared.open(url)
-                        }
-                    }) {
-                        Text("License Management Portal")
-                            .frame(width: 180)
-                    }
-                    .buttonStyle(.borderedProminent)
                 }
             }
             .padding(32)
@@ -281,28 +248,6 @@ struct LicenseManagementView: View {
         }
     }
     
-    @State private var heartPulse = false
-    
-    private func animatedTipJarItem() -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "heart.fill")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.pink)
-                .scaleEffect(heartPulse ? 1.3 : 1.0)
-                .animation(
-                    Animation.easeInOut(duration: 1.2)
-                        .repeatForever(autoreverses: true),
-                    value: heartPulse
-                )
-                .onAppear {
-                    heartPulse = true
-                }
-            
-            Text("Tip Jar")
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary)
-        }
-    }
 }
 
 

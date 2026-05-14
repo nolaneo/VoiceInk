@@ -5,11 +5,11 @@ struct AudioVisualizer: View {
     let color: Color
     let isActive: Bool
 
-    private let barCount = 15
-    private let barWidth: CGFloat = 3
-    private let barSpacing: CGFloat = 2
-    private let minHeight: CGFloat = 4
-    private let maxHeight: CGFloat = 28
+    private let barCount = 12
+    private let barWidth: CGFloat = 2.5
+    private let barSpacing: CGFloat = 1.5
+    private let minHeight: CGFloat = 3
+    private let maxHeight: CGFloat = 18
 
     private let phases: [Double]
 
@@ -36,10 +36,11 @@ struct AudioVisualizer: View {
         guard isActive else { return minHeight }
 
         let time = date.timeIntervalSince1970
-        let amplitude = max(0, min(1, pow(audioMeter.averagePower, 0.7))) // boosted for visibility
-        let wave = sin(time * 8 + phases[index]) * 0.5 + 0.5
+        let amplitude = max(0, min(1, pow(audioMeter.averagePower, 0.7)))
+        // Each bar oscillates independently at slightly different speeds, all centered
+        let wave = sin(time * 6 + phases[index]) * 0.5 + 0.5
         let centerDistance = abs(Double(index) - Double(barCount) / 2) / Double(barCount / 2)
-        let centerBoost = 1.0 - (centerDistance * 0.4)
+        let centerBoost = 1.0 - (centerDistance * 0.5)
 
         return max(minHeight, minHeight + CGFloat(amplitude * wave * centerBoost) * (maxHeight - minHeight))
     }
@@ -47,10 +48,10 @@ struct AudioVisualizer: View {
 
 // Flat bars shown when the recorder is idle (no audio input)
 struct StaticVisualizer: View {
-    private let barCount = 15
-    private let barWidth: CGFloat = 3
-    private let barHeight: CGFloat = 4
-    private let barSpacing: CGFloat = 2
+    private let barCount = 12
+    private let barWidth: CGFloat = 2.5
+    private let barHeight: CGFloat = 3
+    private let barSpacing: CGFloat = 1.5
     let color: Color
 
     var body: some View {
@@ -99,6 +100,6 @@ struct ProcessingStatusDisplay: View {
 
             ProgressAnimation(color: color, animationSpeed: animationSpeed)
         }
-        .frame(height: 28) // matches AudioVisualizer maxHeight to prevent layout shift
+        .frame(height: 18) // matches AudioVisualizer maxHeight to prevent layout shift
     }
 }
